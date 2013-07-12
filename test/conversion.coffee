@@ -42,6 +42,18 @@ describe 'ddb', ->
         strSet: {SS: ['foo', 'bar']}
         num: {N: '1234'}
         numSet: {'NS': ['1234', '5678']}
+      @jsArr = [
+        {str: 'a'}
+        {num: 1}
+        {strArr: ['a', 'b']}
+        {numArr: [1, 2, 3]}
+      ]
+      @ddbArr = [
+        {str: {S: 'a'}}
+        {num: {N: '1'}}
+        {strArr: {SS: ['a', 'b']}}
+        {numArr: {NS: ['1', '2', '3']}}
+      ]
       @shouldThrow = (task) =>
         return (cb) =>
           try
@@ -163,6 +175,16 @@ describe 'ddb', ->
         @shouldThrow => @objFromDDB {key: {'BAD': '1'}}
         @shouldThrow => @objFromDDB {key: {'BAD': ['a', 'b']}}
         @shouldThrow => @objFromDDB {key: {'BAD': [1, 2, 3]}}
-        @shouldThrow => @objFromDDB {key: {'': 'val'}}
+        @shouldThrow => @objFromDDB {key: {'': 'str'}}
         @shouldThrow => @objFromDDB {key: {'': 1}}
+      ], done
+
+  describe '.arrFromDDB()', =>
+
+    it 'should convert arrays of DDB objects into arrays of JS objects', =>
+      assert.deepEqual @jsArr, @arrFromDDB(@ddbArr)
+
+    it.skip 'should not throw when converting arrays of DDB objects into arrays of JS objects', (done) =>
+      async.parallel [
+        @shouldNotThrow => @arrFromDDB ddbArr
       ], done
