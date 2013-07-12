@@ -68,6 +68,7 @@ describe 'ddb', ->
       assert.deepEqual {'key1': {'N': '1234'}}, @objToDDB({key1: 1234, key: null})
 
     it 'should throw when converting JS objects with invalid type fields to DDB objects', =>
+      # JS type reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
       try
         @objToDDB {key: true}
         @objToDDB {key: false}
