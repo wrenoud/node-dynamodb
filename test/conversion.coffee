@@ -25,6 +25,7 @@
 magneto = require 'magneto'
 
 describe 'ddb', ->
+
   before =>
     port = 4567
     magneto.listen port, (err) =>
@@ -43,6 +44,7 @@ describe 'ddb', ->
       return
 
   describe '.objToDDB()', =>
+
     it 'should convert JS objects with scalar fields to DDB objects with scalar fields', =>
       assert.deepEqual {key: {S: 'str'}}, @objToDDB({key: 'str'})
       assert.deepEqual {key: {N: '1234'}}, @objToDDB({key: 1234})
@@ -66,6 +68,7 @@ describe 'ddb', ->
       assert.deepEqual {'key1': {'N': '1234'}}, @objToDDB({key1: 1234, key: null})
 
   describe '.objFromDDB()', =>
+
     it 'should convert DDB objects with scalar fields to JS objects', =>
       assert.deepEqual {key: 'str'}, @objFromDDB({key: {S: 'str'}})
       assert.deepEqual {key: 1234}, @objFromDDB({key: {N: '1234'}})
