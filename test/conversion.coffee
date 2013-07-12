@@ -21,7 +21,7 @@
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 ###
 
-{assert} = require 'chai'
+{assert, expect} = require 'chai'
 magneto = require 'magneto'
 
 describe 'ddb', ->
@@ -62,10 +62,21 @@ describe 'ddb', ->
     it 'should convert complex JS objects to corresponding complex DDB objects', =>
       assert.deepEqual @complexDdbObj, @objToDDB(@complexJsObj)
 
-    it 'should exclude null fields in JS objects from conversion to DDB objects', =>
+    it 'should exclude null/undefined fields in JS objects from conversion to DDB objects', =>
       assert.deepEqual {}, @objToDDB({key: null})
       assert.deepEqual {'key1': {'S': 'str'}}, @objToDDB({key1: 'str', key: null})
       assert.deepEqual {'key1': {'N': '1234'}}, @objToDDB({key1: 1234, key: null})
+
+    it 'should throw when converting JS objects with invalid type fields to DDB objects', =>
+      try
+        @objToDDB {key: true}
+        @objToDDB {key: false}
+        @objToDDB {key: undefined}
+        @objToDDB {key: {}}
+        @objToDDB {key: ->}
+      catch e
+        return
+      assert false, 'did not throw'
 
   describe '.objFromDDB()', =>
 
