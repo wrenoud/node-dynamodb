@@ -22,54 +22,27 @@
 ###
 
 {assert, expect} = require 'chai'
-magneto = require 'magneto'
 async = require 'async'
+util = require './util'
 
 describe 'ddb', ->
 
-  before =>
-    port = 4567
-    magneto.listen port, (err) =>
-      spec = {endpoint: "http://localhost:#{port}"}
-      {@scToDDB, @objToDDB, @objFromDDB, @arrFromDDB} = require('../lib/ddb').ddb(spec)
-      @complexJsObj =
-        str: 'string'
-        strSet: ['foo', 'bar']
-        num: 1234
-        numSet: [1234, 5678]
-      @complexDdbObj =
-        str: {'S': 'string'}
-        strSet: {SS: ['foo', 'bar']}
-        num: {N: '1234'}
-        numSet: {'NS': ['1234', '5678']}
-      @jsArr = [
-        {str: 'a'}
-        {num: 1}
-        {strArr: ['a', 'b']}
-        {numArr: [1, 2, 3]}
-      ]
-      @ddbArr = [
-        {str: {S: 'a'}}
-        {num: {N: '1'}}
-        {strArr: {SS: ['a', 'b']}}
-        {numArr: {NS: ['1', '2', '3']}}
-      ]
-      @shouldThrow = (task) =>
-        return (cb) =>
-          try
-            task()
-          catch e
-            cb null, true
-            return
-          assert false, "did not throw: #{task.toString()}"
-      @shouldNotThrow = (task) =>
-        return (cb) =>
-          try
-            task()
-            cb null, true
-            return
-          catch e
-          assert false, "did throw: #{task.toString()}"
+  before (done) =>
+    @complexJsObj =
+      str: 'string'
+      strSet: ['foo', 'bar']
+      num: 1234
+      numSet: [1234, 5678]
+    @complexDdbObj =
+      str: {'S': 'string'}
+      strSet: {SS: ['foo', 'bar']}
+      num: {N: '1234'}
+      numSet: {'NS': ['1234', '5678']}
+    util.before done, =>
+      {@shouldThrow, @shouldNotThrow} = util
+      {@scToDDB, @objToDDB, @objFromDDB, @arrFromDDB} = util.ddb
+
+  after util.after
 
   describe '.scToDDB()', =>
 
@@ -182,9 +155,30 @@ describe 'ddb', ->
   describe '.arrFromDDB()', =>
 
     it 'should convert arrays of DDB objects into arrays of JS objects', =>
+      @jsArr = [
+        {str: 'a'}
+        {num: 1}
+        {strArr: ['a', 'b']}
+        {numArr: [1, 2, 3]}
+      ]
+      @ddbArr = [
+        {str: {S: 'a'}}
+        {num: {N: '1'}}
+        {strArr: {SS: ['a', 'b']}}
+        {numArr: {NS: ['1', '2', '3']}}
+      ]
       assert.deepEqual @jsArr, @arrFromDDB(@ddbArr)
 
-    it.skip 'should not throw when converting arrays of DDB objects into arrays of JS objects', (done) =>
+    it 'should replace elements of DDB object arrays with JS objects', =>
+      assert.deepEqual @jsArr, @ddbArr
+
+    it 'should not throw when converting arrays of DDB objects into arrays of JS objects', (done) =>
+      @ddbArr = [
+        {str: {S: 'a'}}
+        {num: {N: '1'}}
+        {strArr: {SS: ['a', 'b']}}
+        {numArr: {NS: ['1', '2', '3']}}
+      ]
       async.parallel [
-        @shouldNotThrow => @arrFromDDB ddbArr
+        @shouldNotThrow => @arrFromDDB @ddbArr
       ], done
