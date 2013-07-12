@@ -2,6 +2,8 @@
 
 A Simple, efficient and complete DynamoDB driver for Node.js, with:
 
+- Support for Official Node.JS AWS SDK: https://github.com/aws/aws-sdk-js
+- Support for unit testing with Magneto: https://github.com/exfm/node-magneto
 - Syntactic sweeteners/mapping to handle Amazon DynamoDB's JSON format in NodeJS
 - Efficient and transparent authentication and authentication refresh using Amazon STS
 - Integrated retry logic similar to Amazon's own PhP, Java libraries
