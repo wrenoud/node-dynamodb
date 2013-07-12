@@ -29,7 +29,7 @@ describe 'ddb', ->
   before =>
     port = 4567
     magneto.listen port, (err) =>
-      spec = {endpoint: "http://localhost:#{port}"}#, accessKeyId: '', secretAccessKey: '', region: ''}
+      spec = {endpoint: "http://localhost:#{port}"}
       {@objToDDB, @scToDDB, @objFromDDB, @arrFromDDB} = require('../lib/ddb').ddb(spec)
       @complexJsObj =
         str: 'string'
