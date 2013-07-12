@@ -31,7 +31,7 @@ describe 'ddb', ->
     port = 4567
     magneto.listen port, (err) =>
       spec = {endpoint: "http://localhost:#{port}"}
-      {@objToDDB, @scToDDB, @objFromDDB, @arrFromDDB} = require('../lib/ddb').ddb(spec)
+      {@scToDDB, @objToDDB, @objFromDDB, @arrFromDDB} = require('../lib/ddb').ddb(spec)
       @complexJsObj =
         str: 'string'
         strSet: ['foo', 'bar']
@@ -58,6 +58,34 @@ describe 'ddb', ->
             return
           catch e
           assert false, "did throw: #{task.toString()}"
+
+  describe '.scToDDB()', =>
+
+    it 'should convert scalar JS values to scalar DDB objects', =>
+      assert.deepEqual {S: 'str'}, @scToDDB('str')
+      assert.deepEqual {N: '1234'}, @scToDDB(1234)
+      assert.deepEqual {SS: ['a', 'b']}, @scToDDB(['a', 'b'])
+      assert.deepEqual {NS: ['1', '2', '3']}, @scToDDB([1, 2, 3])
+      assert.deepEqual {NS: []}, @scToDDB([])
+
+    it 'should not throw when converting valid type scalar JS values to DDB objects', (done) =>
+      async.parallel [
+        @shouldNotThrow => @scToDDB 'str'
+        @shouldNotThrow => @scToDDB 1234
+        @shouldNotThrow => @scToDDB ['a', 'b']
+        @shouldNotThrow => @scToDDB [1, 2, 3]
+        @shouldNotThrow => @scToDDB []
+      ], done
+
+    it 'should throw when converting invalid type scalar JS values to DDB objects', (done) =>
+      # JS type reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
+      async.parallel [
+        @shouldThrow => @scToDDB true
+        @shouldThrow => @scToDDB false
+        @shouldThrow => @scToDDB undefined
+        @shouldThrow => @scToDDB {}
+        @shouldThrow => @scToDDB ->
+      ], done
 
   describe '.objToDDB()', =>
 
@@ -92,7 +120,6 @@ describe 'ddb', ->
       ], done
 
     it 'should throw when converting JS objects with invalid type fields to DDB objects', (done) =>
-      # JS type reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
       async.parallel [
         @shouldThrow => @objToDDB {key: true}
         @shouldThrow => @objToDDB {key: false}
