@@ -30,9 +30,13 @@ describe 'ddb', ->
   before (done) =>
     util.before done, =>
       {@shouldThrow, @shouldNotThrow} = util
-      {@createTable, @deleteTable, @describeTable} = util.ddb
+      {@createTable, @deleteTable, @describeTable, @updateTable, @listTables} = util.ddb
 
   after util.after
+
+  describe '.listTables()', =>
+
+    it 'should not list any tables when no tables have been created'
 
   describe '.createTable()', =>
 
@@ -42,14 +46,10 @@ describe 'ddb', ->
 
     it 'should'
 
-  describe '.describeTable', =>
+  describe '.describeTable()', =>
 
     it 'should'
 
-  describe '.updateTable', =>
-
-    it 'should'
-
-  describe '.listTables', =>
+  describe '.updateTable()', =>
 
     it 'should'

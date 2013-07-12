@@ -33,5 +33,6 @@ exports.before = (done, task) =>
       task?()
       done?()
 
-exports.after = (done) =>
-  done()
+exports.after = (done, task) =>
+  task?()
+  done?()
