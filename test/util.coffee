@@ -19,19 +19,26 @@ exports.shouldNotThrow = (task) =>
     catch e
     assert false, "did throw: #{task.toString()}"
 
-magnetoRunning = false
-
-# start magneto, execute task and call done
+# start magneto, execute task followed by done
+ddb = null
 exports.before = (done, task) =>
-  if magnetoRunning then done?()
+  set = (ddb) =>
+    exports.ddb = ddb
+    task?()
+    done?()
+  if ddb then set ddb
   else
     port = 4567
     magneto.listen port, (err) =>
-      spec = {endpoint: "http://localhost:#{port}"}
-      exports.ddb = require('../lib/ddb').ddb(spec)
-      magnetoRunning = true
-      task?()
-      done?()
+      spec =
+        apiVersion: '2011-12-05' #'2012-08-10'
+        sslEnabled: false
+        accessKeyId: 'x'
+        secretAccessKey: 'x'
+        region: 'x'
+        endpoint: "http://localhost:#{port}"
+      ddb = require('../lib/ddb').ddb spec
+      set ddb
 
 exports.after = (done, task) =>
   task?()
