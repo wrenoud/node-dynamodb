@@ -30,21 +30,26 @@ describe 'ddb', ->
   before (done) =>
     util.before done, =>
       {@shouldThrow, @shouldNotThrow} = util
-      {@createTable, @deleteTable, @describeTable, @updateTable, @listTables} = util.ddb
+      {@schemaTypes, @createTable, @deleteTable, @describeTable, @updateTable, @listTables} = util.ddb
 
   after util.after
 
-  describe '.listTables()', =>
-
-    it 'should not list any tables when no tables have been created'
-
   describe '.createTable()', =>
 
-    it 'should'
+    it 'should create table if table does not exist', =>
+      keys = {hash: [id, @schemaTypes.string], range: ['time', @schemaTypes.number]}
+      @createTable 'users', keys, {}, (err, res) =>
+        console.log res
 
   describe '.deleteTable()', =>
 
     it 'should'
+
+  describe '.listTables()', =>
+
+    it.skip 'should not list any tables when no tables exist', =>
+      @listTables {}, (err, res) =>
+        console.log res
 
   describe '.describeTable()', =>
 

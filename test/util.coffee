@@ -1,4 +1,5 @@
 {assert} = require 'chai'
+magneto = require 'magneto'
 
 exports.shouldThrow = (task) =>
   return (cb) =>
@@ -25,7 +26,6 @@ exports.before = (done, task) =>
   if magnetoRunning then done?()
   else
     port = 4567
-    magneto = require 'magneto'
     magneto.listen port, (err) =>
       spec = {endpoint: "http://localhost:#{port}"}
       exports.ddb = require('../lib/ddb').ddb(spec)
