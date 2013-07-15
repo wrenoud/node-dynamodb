@@ -29,7 +29,7 @@ describe 'ddb', ->
 
   before (done) =>
     util.before done, =>
-      {@success, @tryCatch, @didThrow, @didNotThrow} = util
+      {@throwErr, @tryCatch, @didThrow, @didNotThrow} = util
       {@schemaTypes, @createTable, @deleteTable, @describeTable, @updateTable, @listTables} = util.ddb
       @table1Name = 'users'
       @table2Name = 'posts'
@@ -63,11 +63,9 @@ describe 'ddb', ->
 
     it 'should not list any tables when no tables exist', (done) =>
       @listTables {}, (err, res) =>
-        try
+        @tryCatch done, =>
+          @throwErr err, res
           assert.deepEqual res, []
-        catch e
-          err = e
-        done err, res
 
   describe '.createTable()', =>
 

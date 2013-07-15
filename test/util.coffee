@@ -4,19 +4,27 @@ exports.didThrow = (task) =>
   return (cb) =>
     try
       task()
+      cb "did not throw: #{task.toString()}"
     catch e
       cb null, true
-      return
-    cb null, "did not throw: #{task.toString()}"
 
 exports.didNotThrow = (task) =>
   return (cb) =>
     try
       task()
       cb null, true
-      return
     catch e
-    cb null, "did throw: #{task.toString()}"
+      cb "did throw: #{task.toString()}"
+
+exports.throwErr = (err, res) =>
+  if err? then throw err
+
+exports.tryCatch = (done, task) =>
+  try
+    task?()
+    done?()
+  catch e
+    done? e
 
 # start magneto, then execute task followed by done
 ddb = null
