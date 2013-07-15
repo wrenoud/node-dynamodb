@@ -44,6 +44,22 @@ describe 'ddb', ->
 
   after util.after
 
+  it 'should have .scToDDB method', =>
+    assert.isDefined @scToDDB
+    assert.isFunction @scToDDB
+
+  it 'should have .objToDDB method', =>
+    assert.isDefined @objToDDB
+    assert.isFunction @objToDDB
+
+  it 'should have .objFromDDB method', =>
+    assert.isDefined @objFromDDB
+    assert.isFunction @objFromDDB
+
+  it 'should have .arrFromDDB method', =>
+    assert.isDefined @arrFromDDB
+    assert.isFunction @arrFromDDB
+
   describe '.scToDDB()', =>
 
     it 'should convert scalar JS values to scalar DDB objects', =>

@@ -39,13 +39,25 @@ describe 'ddb', ->
 
   after util.after
 
-  describe '.createTable()', =>
+  it 'should have .listTables method', =>
+    assert.isDefined @listTables
+    assert.isFunction @listTables
 
-    it.skip 'should create table if table does not exist', (done) =>
-      async.series [
-        (cb) => @listTables {}, cb
-        (cb) => @createTable @table1Name, @table1Keys, @provisionedThroughput, cb
-      ], done
+  it 'should have .createTable method', =>
+    assert.isDefined @createTable
+    assert.isFunction @createTable
+
+  it 'should have .deleteTable method', =>
+    assert.isDefined @deleteTable
+    assert.isFunction @deleteTable
+
+  it 'should have .describeTable method', =>
+    assert.isDefined @describeTable
+    assert.isFunction @describeTable
+
+  it 'should have .updateTable method', =>
+    assert.isDefined @updateTable
+    assert.isFunction @updateTable
 
   describe '.listTables()', =>
 
@@ -53,6 +65,14 @@ describe 'ddb', ->
       @listTables {}, (err, res) =>
         console.log res
         done err, res
+
+  describe '.createTable()', =>
+
+    it.skip 'should create table if table does not exist', (done) =>
+      async.series [
+        (cb) => @listTables {}, cb
+        (cb) => @createTable @table1Name, @table1Keys, @provisionedThroughput, cb
+      ], done
 
   describe '.deleteTable()', =>
 
