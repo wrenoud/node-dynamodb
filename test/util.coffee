@@ -7,7 +7,7 @@ exports.didThrow = (task) =>
     catch e
       cb null, true
       return
-    throw new Error "did not throw: #{task.toString()}"
+    cb null, "did not throw: #{task.toString()}"
 
 exports.didNotThrow = (task) =>
   return (cb) =>
@@ -16,7 +16,7 @@ exports.didNotThrow = (task) =>
       cb null, true
       return
     catch e
-    throw new Error "did throw: #{task.toString()}"
+    cb null, "did throw: #{task.toString()}"
 
 # start magneto, then execute task followed by done
 ddb = null
