@@ -29,40 +29,39 @@ describe 'ddb', ->
 
   before (done) =>
     util.before done, =>
-      {@throwErr, @tryCatch, @didThrow, @didNotThrow} = util
-      {@schemaTypes, @createTable, @deleteTable, @describeTable, @updateTable, @listTables} = util.ddb
+      {@ddb, @throwErr, @tryCatch, @didThrow, @didNotThrow} = util
       @table1Name = 'users'
       @table2Name = 'posts'
-      @table1Keys = {hash: ['user_id', @schemaTypes().string], range: ['time', @schemaTypes().number]}
-      @table2Keys = {hash: ['post_id', @schemaTypes().string], range: ['text', @schemaTypes().string]}
+      @table1Keys = {hash: ['user_id', @ddb.schemaTypes().string], range: ['time', @ddb.schemaTypes().number]}
+      @table2Keys = {hash: ['post_id', @ddb.schemaTypes().string], range: ['text', @ddb.schemaTypes().string]}
       @provisionedThroughput = {read: 5, write: 5}
 
   after util.after
 
   it 'should have .listTables() method', =>
-    assert.isDefined @listTables
-    assert.isFunction @listTables
+    assert.isDefined @ddb.listTables
+    assert.isFunction @ddb.listTables
 
   it 'should have .createTable() method', =>
-    assert.isDefined @createTable
-    assert.isFunction @createTable
+    assert.isDefined @ddb.createTable
+    assert.isFunction @ddb.createTable
 
   it 'should have .deleteTable() method', =>
-    assert.isDefined @deleteTable
-    assert.isFunction @deleteTable
+    assert.isDefined @ddb.deleteTable
+    assert.isFunction @ddb.deleteTable
 
   it 'should have .describeTable() method', =>
-    assert.isDefined @describeTable
-    assert.isFunction @describeTable
+    assert.isDefined @ddb.describeTable
+    assert.isFunction @ddb.describeTable
 
   it 'should have .updateTable() method', =>
-    assert.isDefined @updateTable
-    assert.isFunction @updateTable
+    assert.isDefined @ddb.updateTable
+    assert.isFunction @ddb.updateTable
 
   describe '.listTables()', =>
 
     it 'should not list any tables when no tables exist', (done) =>
-      @listTables {}, (err, res) =>
+      @ddb.listTables {}, (err, res) =>
         @tryCatch done, =>
           @throwErr err, res
           assert.deepEqual res, []
@@ -71,8 +70,8 @@ describe 'ddb', ->
 
     it.skip 'should create table if table does not exist', (done) =>
       async.series [
-        (cb) => @listTables {}, cb
-        (cb) => @createTable @table1Name, @table1Keys, @provisionedThroughput, cb
+        (cb) => @ddb.listTables {}, cb
+        (cb) => @ddb.createTable @table1Name, @table1Keys, @provisionedThroughput, cb
       ], done
 
   describe '.deleteTable()', =>
