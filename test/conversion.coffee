@@ -21,7 +21,7 @@
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 ###
 
-{assert, expect} = require 'chai'
+{assert} = require 'chai'
 async = require 'async'
 util = require './util'
 
@@ -29,7 +29,7 @@ describe 'ddb', ->
 
   before (done) =>
     util.before done, =>
-      {@shouldThrow, @shouldNotThrow} = util
+      {@didThrow, @didNotThrow} = util
       {@scToDDB, @objToDDB, @objFromDDB, @arrFromDDB} = util.ddb
       @complexJsObj =
         str: 'string'
@@ -44,19 +44,19 @@ describe 'ddb', ->
 
   after util.after
 
-  it 'should have .scToDDB method', =>
+  it 'should have .scToDDB() method', =>
     assert.isDefined @scToDDB
     assert.isFunction @scToDDB
 
-  it 'should have .objToDDB method', =>
+  it 'should have .objToDDB() method', =>
     assert.isDefined @objToDDB
     assert.isFunction @objToDDB
 
-  it 'should have .objFromDDB method', =>
+  it 'should have .objFromDDB() method', =>
     assert.isDefined @objFromDDB
     assert.isFunction @objFromDDB
 
-  it 'should have .arrFromDDB method', =>
+  it 'should have .arrFromDDB() method', =>
     assert.isDefined @arrFromDDB
     assert.isFunction @arrFromDDB
 
@@ -71,21 +71,21 @@ describe 'ddb', ->
 
     it 'should not throw when converting valid type scalar JS values to DDB objects', (done) =>
       async.parallel [
-        @shouldNotThrow => @scToDDB 'str'
-        @shouldNotThrow => @scToDDB 1234
-        @shouldNotThrow => @scToDDB ['a', 'b']
-        @shouldNotThrow => @scToDDB [1, 2, 3]
-        @shouldNotThrow => @scToDDB []
+        @didNotThrow => @scToDDB 'str'
+        @didNotThrow => @scToDDB 1234
+        @didNotThrow => @scToDDB ['a', 'b']
+        @didNotThrow => @scToDDB [1, 2, 3]
+        @didNotThrow => @scToDDB []
       ], done
 
     it 'should throw when converting invalid type scalar JS values to DDB objects', (done) =>
       # JS type reference: https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Operators/typeof
       async.parallel [
-        @shouldThrow => @scToDDB true
-        @shouldThrow => @scToDDB false
-        @shouldThrow => @scToDDB undefined
-        @shouldThrow => @scToDDB {}
-        @shouldThrow => @scToDDB ->
+        @didThrow => @scToDDB true
+        @didThrow => @scToDDB false
+        @didThrow => @scToDDB undefined
+        @didThrow => @scToDDB {}
+        @didThrow => @scToDDB ->
       ], done
 
   describe '.objToDDB()', =>
@@ -114,19 +114,19 @@ describe 'ddb', ->
 
     it 'should not throw when converting JS objects with valid type fields to DDB objects', (done) =>
       async.parallel [
-        @shouldNotThrow => @objToDDB {key: 'a'}
-        @shouldNotThrow => @objToDDB {key: 1}
-        @shouldNotThrow => @objToDDB {key: ['a', 'b']}
-        @shouldNotThrow => @objToDDB {key: [1, 2, 3]}
+        @didNotThrow => @objToDDB {key: 'a'}
+        @didNotThrow => @objToDDB {key: 1}
+        @didNotThrow => @objToDDB {key: ['a', 'b']}
+        @didNotThrow => @objToDDB {key: [1, 2, 3]}
       ], done
 
     it 'should throw when converting JS objects with invalid type fields to DDB objects', (done) =>
       async.parallel [
-        @shouldThrow => @objToDDB {key: true}
-        @shouldThrow => @objToDDB {key: false}
-        @shouldThrow => @objToDDB {key: undefined}
-        @shouldThrow => @objToDDB {key: {}}
-        @shouldThrow => @objToDDB {key: ->}
+        @didThrow => @objToDDB {key: true}
+        @didThrow => @objToDDB {key: false}
+        @didThrow => @objToDDB {key: undefined}
+        @didThrow => @objToDDB {key: {}}
+        @didThrow => @objToDDB {key: ->}
       ], done
 
   describe '.objFromDDB()', =>
@@ -150,22 +150,22 @@ describe 'ddb', ->
 
     it 'should not throw when converting DDB objects with valid type fields to JS objects', (done) =>
       async.parallel [
-        @shouldNotThrow => @objFromDDB {key: {'N': '1'}}
-        @shouldNotThrow => @objFromDDB {key: {'N': 1}}
-        @shouldNotThrow => @objFromDDB {key: {'S': 'a'}}
-        @shouldNotThrow => @objFromDDB {key: {'S': 1}}
-        @shouldNotThrow => @objFromDDB {key: {'NS': ['a', 'a']}}
-        @shouldNotThrow => @objFromDDB {key: {'SS': [1, 2, 3]}}
+        @didNotThrow => @objFromDDB {key: {'N': '1'}}
+        @didNotThrow => @objFromDDB {key: {'N': 1}}
+        @didNotThrow => @objFromDDB {key: {'S': 'a'}}
+        @didNotThrow => @objFromDDB {key: {'S': 1}}
+        @didNotThrow => @objFromDDB {key: {'NS': ['a', 'a']}}
+        @didNotThrow => @objFromDDB {key: {'SS': [1, 2, 3]}}
       ], done
 
     it 'should throw when converting DDB objects with invalid type fields to JS objects', (done) =>
       async.parallel [
-        @shouldThrow => @objFromDDB {key: {'BAD': 'a'}}
-        @shouldThrow => @objFromDDB {key: {'BAD': '1'}}
-        @shouldThrow => @objFromDDB {key: {'BAD': ['a', 'b']}}
-        @shouldThrow => @objFromDDB {key: {'BAD': [1, 2, 3]}}
-        @shouldThrow => @objFromDDB {key: {'': 'str'}}
-        @shouldThrow => @objFromDDB {key: {'': 1}}
+        @didThrow => @objFromDDB {key: {'BAD': 'a'}}
+        @didThrow => @objFromDDB {key: {'BAD': '1'}}
+        @didThrow => @objFromDDB {key: {'BAD': ['a', 'b']}}
+        @didThrow => @objFromDDB {key: {'BAD': [1, 2, 3]}}
+        @didThrow => @objFromDDB {key: {'': 'str'}}
+        @didThrow => @objFromDDB {key: {'': 1}}
       ], done
 
   describe '.arrFromDDB()', =>
@@ -196,5 +196,5 @@ describe 'ddb', ->
         {numArr: {NS: ['1', '2', '3']}}
       ]
       async.parallel [
-        @shouldNotThrow => @arrFromDDB @ddbArr
+        @didNotThrow => @arrFromDDB @ddbArr
       ], done

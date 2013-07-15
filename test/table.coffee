@@ -21,7 +21,7 @@
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 ###
 
-{assert, expect} = require 'chai'
+{assert} = require 'chai'
 async = require 'async'
 util = require './util'
 
@@ -29,7 +29,7 @@ describe 'ddb', ->
 
   before (done) =>
     util.before done, =>
-      {@shouldThrow, @shouldNotThrow} = util
+      {@success, @tryCatch, @didThrow, @didNotThrow} = util
       {@schemaTypes, @createTable, @deleteTable, @describeTable, @updateTable, @listTables} = util.ddb
       @table1Name = 'users'
       @table2Name = 'posts'
@@ -39,31 +39,34 @@ describe 'ddb', ->
 
   after util.after
 
-  it 'should have .listTables method', =>
+  it 'should have .listTables() method', =>
     assert.isDefined @listTables
     assert.isFunction @listTables
 
-  it 'should have .createTable method', =>
+  it 'should have .createTable() method', =>
     assert.isDefined @createTable
     assert.isFunction @createTable
 
-  it 'should have .deleteTable method', =>
+  it 'should have .deleteTable() method', =>
     assert.isDefined @deleteTable
     assert.isFunction @deleteTable
 
-  it 'should have .describeTable method', =>
+  it 'should have .describeTable() method', =>
     assert.isDefined @describeTable
     assert.isFunction @describeTable
 
-  it 'should have .updateTable method', =>
+  it 'should have .updateTable() method', =>
     assert.isDefined @updateTable
     assert.isFunction @updateTable
 
   describe '.listTables()', =>
 
-    it.skip 'should not list any tables when no tables exist', (done) =>
+    it 'should not list any tables when no tables exist', (done) =>
       @listTables {}, (err, res) =>
-        console.log res
+        try
+          assert.deepEqual res, []
+        catch e
+          err = e
         done err, res
 
   describe '.createTable()', =>

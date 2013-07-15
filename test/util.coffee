@@ -1,6 +1,6 @@
 magneto = require 'magneto'
 
-exports.shouldThrow = (task) =>
+exports.didThrow = (task) =>
   return (cb) =>
     try
       task()
@@ -9,7 +9,7 @@ exports.shouldThrow = (task) =>
       return
     throw new Error "did not throw: #{task.toString()}"
 
-exports.shouldNotThrow = (task) =>
+exports.didNotThrow = (task) =>
   return (cb) =>
     try
       task()
@@ -25,6 +25,7 @@ exports.before = (done, task) =>
     exports.ddb = ddb
     task?()
     done? null, ddb
+
   if ddb then set ddb
   else
     port = 4567
