@@ -41,7 +41,7 @@ describe 'ddb', ->
 
   describe '.createTable()', =>
 
-    it 'should create table if table does not exist', (done) =>
+    it.skip 'should create table if table does not exist', (done) =>
       async.series [
         (cb) => @listTables {}, cb
         (cb) => @createTable @table1Name, @table1Keys, @provisionedThroughput, cb
@@ -49,7 +49,7 @@ describe 'ddb', ->
 
   describe '.listTables()', =>
 
-    it 'should not list any tables when no tables exist', (done) =>
+    it.skip 'should not list any tables when no tables exist', (done) =>
       @listTables {}, (err, res) =>
         console.log res
         done err, res

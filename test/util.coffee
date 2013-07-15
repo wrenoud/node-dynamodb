@@ -1,4 +1,3 @@
-{assert} = require 'chai'
 magneto = require 'magneto'
 
 exports.shouldThrow = (task) =>
@@ -8,7 +7,7 @@ exports.shouldThrow = (task) =>
     catch e
       cb null, true
       return
-    assert false, "did not throw: #{task.toString()}"
+    throw new Error "did not throw: #{task.toString()}"
 
 exports.shouldNotThrow = (task) =>
   return (cb) =>
@@ -17,29 +16,32 @@ exports.shouldNotThrow = (task) =>
       cb null, true
       return
     catch e
-    assert false, "did throw: #{task.toString()}"
+    throw new Error "did throw: #{task.toString()}"
 
-# start magneto, execute task followed by done
+# start magneto, then execute task followed by done
 ddb = null
 exports.before = (done, task) =>
   set = (ddb) =>
     exports.ddb = ddb
     task?()
-    done?()
+    done? null, ddb
   if ddb then set ddb
   else
     port = 4567
     magneto.listen port, (err) =>
-      spec =
-        apiVersion: '2011-12-05' #'2012-08-10'
-        sslEnabled: false
-        accessKeyId: 'x'
-        secretAccessKey: 'x'
-        region: 'x'
-        endpoint: "http://localhost:#{port}"
-      ddb = require('../lib/ddb').ddb spec
-      set ddb
+      if err? then done? err
+      else
+        spec =
+          apiVersion: '2011-12-05' #'2012-08-10'
+          sslEnabled: false
+          accessKeyId: 'x'
+          secretAccessKey: 'x'
+          region: 'x'
+          endpoint: "http://localhost:#{port}"
+        ddb = require('../lib/ddb').ddb spec
+        set ddb
 
+# perform cleanup, then execute task followed by done
 exports.after = (done, task) =>
   task?()
   done?()
