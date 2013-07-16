@@ -59,28 +59,28 @@ describe 'ddb item API', ->
 
   describe '.getItem()', =>
 
-    it 'should not throw', (done) =>
+    it.skip 'should not throw', (done) =>
       async.series [
         #(cb) => @didNotThrow cb, => 
       ], done
 
   describe '.putItem()', =>
 
-    it 'should not throw', (done) =>
+    it.skip 'should not throw', (done) =>
       async.series [
         #(cb) => @didNotThrow cb, =>
       ], done
 
   describe '.deleteItem()', =>
 
-    it 'should not throw', (done) =>
+    it.skip 'should not throw', (done) =>
       async.series [
         #(cb) => @didNotThrow cb, =>
       ], done
 
   describe '.updateItem()', =>
 
-    it 'should not throw', (done) =>
+    it.skip 'should not throw', (done) =>
       async.series [
         #(cb) => @didNotThrow cb, =>
       ], done
