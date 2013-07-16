@@ -58,6 +58,8 @@ describe 'ddb', ->
 
     it 'should not throw', (done) =>
       async.parallel [
+        # equivalent
+        (cb) => @tryCatch cb, => @listTables {}, cb
         @didNotThrow => @listTables {}
       ], done
 
@@ -68,8 +70,8 @@ describe 'ddb', ->
 
         (tables, cb) => @tryCatchDone cb, =>
           assert.isArray tables, 'should return array of table names'
-          assert.deepEqual tables, [], 'should return empty array of table names'
           assert.equal tables.length, 0, 'should return empty array of table names'
+          assert.deepEqual tables, [], 'should return empty array of table names'
       ], done
 
   describe '.createTable()', =>
@@ -91,10 +93,6 @@ describe 'ddb', ->
           assert.deepEqual tables, [@table1Name], 'should return name table was created with'
       ], done
 
-  describe '.deleteTable()', =>
-
-    it 'should'
-
   describe '.describeTable()', =>
 
     it 'should'
@@ -102,3 +100,24 @@ describe 'ddb', ->
   describe '.updateTable()', =>
 
     it 'should'
+
+  describe '.deleteTable()', =>
+
+    it 'should delete table if table already exists', (done) =>
+      async.waterfall [
+        (cb) => @tryCatch cb, =>
+          @deleteTable @table1Name, cb
+
+        (table, cb) => @tryCatchDone cb, =>
+          expect(table).to.contain.keys 'TableName', 'KeySchema', 'TableStatus'
+          expect(table.TableName).to.equal @table1Name
+          expect(table.TableStatus).to.equal 'DELETING'
+
+        (cb) => @tryCatch cb, =>
+          @listTables {}, cb
+
+        (tables, cb) => @tryCatchDone cb, =>
+          assert.isArray tables, 'should return array of table names'
+          assert.equal tables.length, 0, 'should return empty array of table names'
+          assert.deepEqual tables, [], 'should return empty array of table names'
+      ], done
