@@ -1,5 +1,6 @@
 magneto = require 'magneto'
 
+# check if function threw an error
 exports.didThrow = (task) =>
   return (cb) =>
     try
@@ -9,6 +10,7 @@ exports.didThrow = (task) =>
       return
     cb "did not throw: #{task.toString()}"
 
+# check if function did not throw an error
 exports.didNotThrow = (task) =>
   return (cb) =>
     try
@@ -21,7 +23,19 @@ exports.didNotThrow = (task) =>
 exports.throwIfErr = (err, res) =>
   if err? then throw err
 
+# execute task in try/catch block
+# call done on error
+# use when task contains asyn function calls
 exports.tryCatch = (done, task) =>
+  try
+    task?()
+  catch e
+    done? e
+
+# execute task in try/catch block and follow by done
+# call done on error
+# use when task does not contain async function calls
+exports.tryCatchDone = (done, task) =>
   try
     task?()
     done?()

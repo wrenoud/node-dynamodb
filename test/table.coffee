@@ -29,7 +29,7 @@ describe 'ddb', ->
 
   before (done) =>
     util.before done, =>
-      {@ddb, @throwIfErr, @tryCatch, @didThrow, @didNotThrow} = util
+      {@ddb, @throwIfErr, @tryCatch, @tryCatchDone, @didThrow, @didNotThrow} = util
       {@listTables, @createTable, @deleteTable, @describeTable, @updateTable} = util.ddb
       @table1Name = 'users'
       @table2Name = 'posts'
@@ -58,33 +58,37 @@ describe 'ddb', ->
 
     it 'should not throw', (done) =>
       async.parallel [
-        @didNotThrow => @ddb.listTables {}
+        @didNotThrow => @listTables {}
       ], done
 
     it 'should not list any tables when no tables exist', (done) =>
       async.waterfall [
-        (cb) => @ddb.listTables {}, cb
-        (res, cb) => @tryCatch cb, =>
-          assert.deepEqual res, []
+        (cb) => @tryCatch cb, =>
+          @listTables {}, cb
+
+        (tables, cb) => @tryCatchDone cb, =>
+          assert.isArray tables, 'should return array of table names'
+          assert.deepEqual tables, [], 'should return empty array of table names'
+          assert.equal tables.length, 0, 'should return empty array of table names'
       ], done
 
   describe '.createTable()', =>
-    ###
-     { CreationDateTime: 1373929293394,
-       KeySchema: [Object],
-       ItemCount: 0,
-       AttributeDefinitions: [Object],
-       ProvisionedThroughput: [Object],
-       TableName: 'apps',
-       TableStatus: 'ACTIVE',
-       TableSizeBytes: 0 } },
-    ###
-    it.skip 'should create table if table does not exist', (done) =>
+    it 'should create table if table does not exist', (done) =>
       async.waterfall [
         (cb) => @tryCatch cb, =>
-          @ddb.createTable @table1Name, @table1Keys, @provisionedThroughput, cb
-        (res, cb) =>  @tryCatch cb, =>
-            expect(res).to.contain 'TableName', 'KeySchema'
+          @createTable @table1Name, @table1Keys, @provisionedThroughput, cb
+
+        (table, cb) => @tryCatchDone cb, =>
+          expect(table).to.contain.keys 'TableName', 'KeySchema', 'TableStatus'
+          expect(table.TableName).to.equal @table1Name
+          expect(table.TableStatus).to.equal 'ACTIVE'
+
+        (cb) => @tryCatch cb, =>
+          @listTables {}, cb
+
+        (tables, cb) => @tryCatchDone cb, =>
+          assert.equal tables.length, 1, 'should return single table name'
+          assert.deepEqual tables, [@table1Name], 'should return name table was created with'
       ], done
 
   describe '.deleteTable()', =>
