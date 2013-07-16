@@ -109,6 +109,12 @@ describe 'ddb table API', ->
 
   describe '.describeTable()', =>
 
+    it 'should not throw', (done) =>
+      async.series [
+        (cb) => @didNotThrow cb, =>
+          @describeTable @table1Name, cb
+      ], done
+
     it 'should return information about existing table', (done) =>
       async.waterfall [
         (cb) => @tryCatch cb, =>
@@ -122,7 +128,21 @@ describe 'ddb table API', ->
           expect(table.ProvisionedThroughput.WriteCapacityUnits).to.equal @provisionedThroughput.write
       ], done
 
+    it 'should fail to describe table that does not exist', (done) =>
+      async.series [
+        (cb) => @describeTable @table2Name, @didError(cb)
+      ], done
+
   describe '.updateTable()', =>
+
+    it 'should not throw', (done) =>
+      async.series [
+        (cb) => @didNotThrow cb, =>
+          @updateTable @table1Name, {read: 1, write: 1}, cb
+
+        (cb) => @tryCatch cb, =>
+          @updateTable @table1Name, @provisionedThroughput, cb
+      ], done
 
     it 'should update provisioned throughput of existing table', (done) =>
       async.waterfall [
@@ -149,7 +169,21 @@ describe 'ddb table API', ->
           expect(table.ProvisionedThroughput.WriteCapacityUnits).to.equal 10
       ], done
 
+    it 'should fail to update table that does not exist', (done) =>
+      async.series [
+        (cb) => @updateTable @table2Name, @provisionedThroughput, @didError(cb)
+      ], done
+
   describe '.deleteTable()', =>
+
+    it 'should not throw', (done) =>
+      async.series [
+        (cb) => @tryCatch cb, =>
+          @createTable @table2Name, @table2Keys, @provisionedThroughput, cb
+
+        (cb) => @didNotThrow cb, =>
+          @deleteTable @table2Name, cb
+      ], done
 
     it 'should delete table if table already exists', (done) =>
       async.waterfall [
