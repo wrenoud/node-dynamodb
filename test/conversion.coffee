@@ -25,7 +25,7 @@
 async = require 'async'
 util = require './util'
 
-describe 'ddb', ->
+describe 'ddb conversion APIs', ->
 
   before (done) =>
     util.before done, =>

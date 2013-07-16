@@ -25,7 +25,7 @@
 async = require 'async'
 util = require './util'
 
-describe 'ddb', ->
+describe 'ddb table APIs', ->
 
   before (done) =>
     util.before done, =>
@@ -94,11 +94,39 @@ describe 'ddb', ->
 
   describe '.describeTable()', =>
 
-    it 'should'
+    it 'should return information about existing table', (done) =>
+      async.waterfall [
+        (cb) => @tryCatch cb, =>
+          @describeTable @table1Name, cb
+
+        (table, cb) => @tryCatchDone cb, =>
+          expect(table).to.contain.keys 'TableName', 'ProvisionedThroughput', 'TableStatus'
+          expect(table.TableName).to.equal @table1Name
+          expect(table.TableStatus).to.equal 'ACTIVE'
+          expect(table.ProvisionedThroughput.ReadCapacityUnits).to.equal @provisionedThroughput.read
+          expect(table.ProvisionedThroughput.WriteCapacityUnits).to.equal @provisionedThroughput.write
+      ], done
 
   describe '.updateTable()', =>
 
-    it 'should'
+    it.skip 'should update provisioned throughput of existing table', (done) =>
+      async.waterfall [
+        (cb) => @tryCatch cb, =>
+          @describeTable @table1Name, cb
+
+        (table, cb) => @tryCatchDone cb, =>
+          expect(table).to.contain.keys 'ProvisionedThroughput'
+          expect(table.ProvisionedThroughput.ReadCapacityUnits).to.equal @provisionedThroughput.read
+          expect(table.ProvisionedThroughput.WriteCapacityUnits).to.equal @provisionedThroughput.write
+
+        (cb) => @tryCatch cb, =>
+          @updateTable @table1Name, {read: 10, write: 10}, cb
+
+        (table, cb) => @tryCatchDone cb, =>
+          expect(table).to.contain.keys 'ProvisionedThroughput'
+          expect(table.ProvisionedThroughput.ReadCapacityUnits).to.equal 10
+          expect(table.ProvisionedThroughput.WriteCapacityUnits).to.equal 10
+      ], done
 
   describe '.deleteTable()', =>
 
