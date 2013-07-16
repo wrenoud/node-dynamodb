@@ -21,7 +21,7 @@
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 ###
 
-{assert} = require 'chai'
+{assert, expect} = require 'chai'
 async = require 'async'
 util = require './util'
 
@@ -29,7 +29,8 @@ describe 'ddb', ->
 
   before (done) =>
     util.before done, =>
-      {@ddb, @throwErr, @tryCatch, @didThrow, @didNotThrow} = util
+      {@ddb, @throwIfErr, @tryCatch, @didThrow, @didNotThrow} = util
+      {@listTables, @createTable, @deleteTable, @describeTable, @updateTable} = util.ddb
       @table1Name = 'users'
       @table2Name = 'posts'
       @table1Keys = {hash: ['user_id', @ddb.schemaTypes().string], range: ['time', @ddb.schemaTypes().number]}
@@ -39,39 +40,51 @@ describe 'ddb', ->
   after util.after
 
   it 'should have .listTables() method', =>
-    assert.isDefined @ddb.listTables
-    assert.isFunction @ddb.listTables
+    expect(@ddb).to.respondTo 'listTables'
 
   it 'should have .createTable() method', =>
-    assert.isDefined @ddb.createTable
-    assert.isFunction @ddb.createTable
+    expect(@ddb).to.respondTo 'createTable'
 
   it 'should have .deleteTable() method', =>
-    assert.isDefined @ddb.deleteTable
-    assert.isFunction @ddb.deleteTable
+    expect(@ddb).to.respondTo 'deleteTable'
 
   it 'should have .describeTable() method', =>
-    assert.isDefined @ddb.describeTable
-    assert.isFunction @ddb.describeTable
+    expect(@ddb).to.respondTo 'describeTable'
 
   it 'should have .updateTable() method', =>
-    assert.isDefined @ddb.updateTable
-    assert.isFunction @ddb.updateTable
+    expect(@ddb).to.respondTo 'updateTable'
 
   describe '.listTables()', =>
 
+    it 'should not throw', (done) =>
+      async.parallel [
+        @didNotThrow => @ddb.listTables {}
+      ], done
+
     it 'should not list any tables when no tables exist', (done) =>
-      @ddb.listTables {}, (err, res) =>
-        @tryCatch done, =>
-          @throwErr err, res
+      async.waterfall [
+        (cb) => @ddb.listTables {}, cb
+        (res, cb) => @tryCatch cb, =>
           assert.deepEqual res, []
+      ], done
 
   describe '.createTable()', =>
-
+    ###
+     { CreationDateTime: 1373929293394,
+       KeySchema: [Object],
+       ItemCount: 0,
+       AttributeDefinitions: [Object],
+       ProvisionedThroughput: [Object],
+       TableName: 'apps',
+       TableStatus: 'ACTIVE',
+       TableSizeBytes: 0 } },
+    ###
     it.skip 'should create table if table does not exist', (done) =>
-      async.series [
-        (cb) => @ddb.listTables {}, cb
-        (cb) => @ddb.createTable @table1Name, @table1Keys, @provisionedThroughput, cb
+      async.waterfall [
+        (cb) => @tryCatch cb, =>
+          @ddb.createTable @table1Name, @table1Keys, @provisionedThroughput, cb
+        (res, cb) =>  @tryCatch cb, =>
+            expect(res).to.contain 'TableName', 'KeySchema'
       ], done
 
   describe '.deleteTable()', =>

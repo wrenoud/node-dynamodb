@@ -21,7 +21,7 @@
 // USE OR OTHER DEALINGS IN THE SOFTWARE.
 ###
 
-{assert} = require 'chai'
+{assert, expect} = require 'chai'
 async = require 'async'
 util = require './util'
 
@@ -29,7 +29,7 @@ describe 'ddb', ->
 
   before (done) =>
     util.before done, =>
-      {@didThrow, @didNotThrow} = util
+      {@ddb, @didThrow, @didNotThrow} = util
       {@scToDDB, @objToDDB, @objFromDDB, @arrFromDDB} = util.ddb
       @complexJsObj =
         str: 'string'
@@ -45,20 +45,16 @@ describe 'ddb', ->
   after util.after
 
   it 'should have .scToDDB() method', =>
-    assert.isDefined @scToDDB
-    assert.isFunction @scToDDB
+    expect(@ddb).to.respondTo 'scToDDB'
 
   it 'should have .objToDDB() method', =>
-    assert.isDefined @objToDDB
-    assert.isFunction @objToDDB
+    expect(@ddb).to.respondTo 'objToDDB'
 
   it 'should have .objFromDDB() method', =>
-    assert.isDefined @objFromDDB
-    assert.isFunction @objFromDDB
+    expect(@ddb).to.respondTo 'objFromDDB'
 
   it 'should have .arrFromDDB() method', =>
-    assert.isDefined @arrFromDDB
-    assert.isFunction @arrFromDDB
+    expect(@ddb).to.respondTo 'arrFromDDB'
 
   describe '.scToDDB()', =>
 
