@@ -56,3 +56,31 @@ describe 'ddb item API', ->
 
   it 'should have .batchWriteItem() method', =>
     expect(@ddb).to.respondTo 'batchWriteItem'
+
+  describe '.query()', =>
+
+    it.skip 'should not throw', (done) =>
+      async.series [
+        #(cb) => @didNotThrow cb, => 
+      ], done
+
+  describe '.scan()', =>
+
+    it.skip 'should not throw', (done) =>
+      async.series [
+        #(cb) => @didNotThrow cb, =>
+      ], done
+
+  describe '.batchGetItem()', =>
+
+    it.skip 'should not throw', (done) =>
+      async.series [
+        #(cb) => @didNotThrow cb, =>
+      ], done
+
+  describe '.batchWriteItem()', =>
+
+    it.skip 'should not throw', (done) =>
+      async.series [
+        #(cb) => @didNotThrow cb, =>
+      ], done
