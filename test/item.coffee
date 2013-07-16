@@ -25,7 +25,7 @@
 async = require 'async'
 util = require './util'
 
-describe 'ddb table API', ->
+describe 'ddb item API', ->
 
   before (done) =>
     util.before done, =>
