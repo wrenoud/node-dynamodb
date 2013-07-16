@@ -25,11 +25,11 @@
 async = require 'async'
 util = require './util'
 
-describe 'ddb table APIs', ->
+describe 'ddb table API', ->
 
   before (done) =>
     util.before done, =>
-      {@ddb, @throwIfErr, @tryCatch, @tryCatchDone, @didThrow, @didNotThrow} = util
+      {@ddb, @tryCatch, @tryCatchDone, @didThrow, @didNotThrow, @didError, @didNotError} = util
       {@listTables, @createTable, @deleteTable, @describeTable, @updateTable} = util.ddb
       @table1Name = 'users'
       @table2Name = 'posts'
@@ -57,10 +57,9 @@ describe 'ddb table APIs', ->
   describe '.listTables()', =>
 
     it 'should not throw', (done) =>
-      async.parallel [
-        # equivalent
-        (cb) => @tryCatch cb, => @listTables {}, cb
-        @didNotThrow => @listTables {}
+      async.series [
+        (cb) => @didNotThrow cb, =>
+          @listTables {}, cb
       ], done
 
     it 'should not list any tables when no tables exist', (done) =>
@@ -74,6 +73,16 @@ describe 'ddb table APIs', ->
       ], done
 
   describe '.createTable()', =>
+
+    it 'should not throw', (done) =>
+      async.series [
+        (cb) => @didNotThrow cb, =>
+          @createTable @table2Name, @table2Keys, @provisionedThroughput, cb
+
+        (cb) => @tryCatch cb, =>
+          @deleteTable @table2Name, cb
+      ], done
+
     it 'should create table if table does not exist', (done) =>
       async.waterfall [
         (cb) => @tryCatch cb, =>
@@ -90,6 +99,12 @@ describe 'ddb table APIs', ->
         (tables, cb) => @tryCatchDone cb, =>
           assert.isArray tables, 'should return array of table names'
           assert.equal tables.length, 1, 'should return single table name'
+          assert.equal tables[0], @table1Name
+      ], done
+
+    it 'should fail to create table that already exists', (done) =>
+      async.series [
+        (cb) => @createTable @table1Name, @table1Keys, @provisionedThroughput, @didError(cb)
       ], done
 
   describe '.describeTable()', =>
@@ -109,7 +124,7 @@ describe 'ddb table APIs', ->
 
   describe '.updateTable()', =>
 
-    it.skip 'should update provisioned throughput of existing table', (done) =>
+    it 'should update provisioned throughput of existing table', (done) =>
       async.waterfall [
         (cb) => @tryCatch cb, =>
           @describeTable @table1Name, cb
@@ -122,8 +137,14 @@ describe 'ddb table APIs', ->
         (cb) => @tryCatch cb, =>
           @updateTable @table1Name, {read: 10, write: 10}, cb
 
+        (table, cb) => @tryCatch cb, =>
+          # magneto currently has an issue where updateTable does not return table description
+          # https://github.com/exfm/node-magneto/issues/8
+          @describeTable @table1Name, cb
+
         (table, cb) => @tryCatchDone cb, =>
           expect(table).to.contain.keys 'ProvisionedThroughput'
+          expect(table.TableName).to.equal @table1Name
           expect(table.ProvisionedThroughput.ReadCapacityUnits).to.equal 10
           expect(table.ProvisionedThroughput.WriteCapacityUnits).to.equal 10
       ], done
@@ -146,4 +167,9 @@ describe 'ddb table APIs', ->
         (tables, cb) => @tryCatchDone cb, =>
           assert.isArray tables, 'should return array of table names'
           assert.equal tables.length, 0, 'should return empty array of table names'
+      ], done
+
+    it 'should fail to delete table that does not exist', (done) =>
+      async.series [
+        (cb) => @deleteTable @table1Name, @didError(cb)
       ], done
