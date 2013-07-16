@@ -71,7 +71,6 @@ describe 'ddb', ->
         (tables, cb) => @tryCatchDone cb, =>
           assert.isArray tables, 'should return array of table names'
           assert.equal tables.length, 0, 'should return empty array of table names'
-          assert.deepEqual tables, [], 'should return empty array of table names'
       ], done
 
   describe '.createTable()', =>
@@ -89,8 +88,8 @@ describe 'ddb', ->
           @listTables {}, cb
 
         (tables, cb) => @tryCatchDone cb, =>
+          assert.isArray tables, 'should return array of table names'
           assert.equal tables.length, 1, 'should return single table name'
-          assert.deepEqual tables, [@table1Name], 'should return name table was created with'
       ], done
 
   describe '.describeTable()', =>
@@ -119,5 +118,4 @@ describe 'ddb', ->
         (tables, cb) => @tryCatchDone cb, =>
           assert.isArray tables, 'should return array of table names'
           assert.equal tables.length, 0, 'should return empty array of table names'
-          assert.deepEqual tables, [], 'should return empty array of table names'
       ], done
