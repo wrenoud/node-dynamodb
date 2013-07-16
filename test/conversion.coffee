@@ -29,7 +29,7 @@ describe 'ddb conversion API', ->
 
   before (done) =>
     util.before done, =>
-      {@ddb, @tryCatchDone, @didThrowDone, @didNotThrowDone} = util
+      {@ddb, @didThrowDone, @didNotThrowDone} = util
       {@scToDDB, @objToDDB, @objFromDDB, @arrFromDDB} = util.ddb
       @complexJsObj =
         str: 'string'
