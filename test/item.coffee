@@ -46,16 +46,16 @@ describe 'ddb table API', ->
     @deleteTable @table1Name, done
 
   it 'should have .getItem() method', =>
-    expect(@ddb).to.respondTo 'listTables'
+    expect(@ddb).to.respondTo 'getItem'
 
   it 'should have .putItem() method', =>
-    expect(@ddb).to.respondTo 'createTable'
+    expect(@ddb).to.respondTo 'putItem'
 
   it 'should have .deleteItem() method', =>
-    expect(@ddb).to.respondTo 'deleteTable'
+    expect(@ddb).to.respondTo 'deleteItem'
 
   it 'should have .updateItem() method', =>
-    expect(@ddb).to.respondTo 'describeTable'
+    expect(@ddb).to.respondTo 'updateItem'
 
   describe '.getItem()', =>
 
