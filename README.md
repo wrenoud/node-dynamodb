@@ -31,6 +31,20 @@ Available options for the constructor are the following:
 
 ### CreateTable
 
+    createTable = function(table, keySchema, localSecondaryIndexes, provisionedThroughput, callback)
+
+* `table` - the table name
+* `keySchema` - an object with the details of the hash and range
+    * `hash` - an array with the first element being the name and second the type `[attribute, type]`
+    * `range` - (optional) same as hash
+* `localSecondaryIndexes` - an object with an attribute for each index name which is an object of the details
+    i.e. `{'price-index':{AttributeName:'price',KeyType:'N',Projection:'ALL'|['a','b','c']}}`
+    * `AttributeName` - the name of the attribute that the index is for
+    * `AttributeType` - the attribute type
+    * `Projection` - (optional) either 'ALL' or an array of attribute names, if not included this will default to only the hash, range, and index
+* `provisionedThroughput` - `{write: X, read: Y}`
+*
+
 ```JavaScript
 ddb.createTable('foo', { hash: ['id', ddb.schemaTypes().string],
                          range: ['time', ddb.schemaTypes().number] },
